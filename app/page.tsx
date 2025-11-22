@@ -171,7 +171,7 @@ export default function Home() {
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">Closest Number</h1>
-          <p className="text-purple-200 text-lg">Live AI Trivia Game</p>
+          <p className="text-purple-200 text-lg">***Live AI Trivia Game***</p>
         </div>
 
         {/* Create Room (Online only) */}
