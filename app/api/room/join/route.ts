@@ -5,7 +5,7 @@ export async function POST(req: Request) {
   try {
     const { roomCode, playerName } = await req.json();
     
-    const room = getRoom(roomCode);
+    const room = await getRoom(roomCode);
     if (!room) {
       return NextResponse.json({ error: "Room not found" }, { status: 404 });
     }
@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     // Ensure backward compatibility - add usedQuestions if missing
     if (!room.usedQuestions) {
       room.usedQuestions = [];
-      updateRoom(roomCode, room);
+      await updateRoom(roomCode, room);
     }
     
     if (room.gameState === 'playing' || room.gameState === 'revealed') {
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
     };
     
     room.players.push(player);
-    updateRoom(roomCode, room);
+    await updateRoom(roomCode, room);
     
     return NextResponse.json({ 
       success: true, 

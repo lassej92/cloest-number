@@ -5,7 +5,7 @@ export async function POST(req: Request) {
   try {
     const { roomCode, playerId, answer } = await req.json();
     
-    const room = getRoom(roomCode);
+    const room = await getRoom(roomCode);
     if (!room) {
       return NextResponse.json({ error: "Room not found" }, { status: 404 });
     }
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     player.currentAnswer = parseFloat(answer);
     player.answeredAt = new Date().toISOString();
     
-    updateRoom(roomCode, room);
+    await updateRoom(roomCode, room);
     
     return NextResponse.json({ 
       success: true, 

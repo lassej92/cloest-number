@@ -9,7 +9,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Room code required" }, { status: 400 });
     }
     
-    const room = getRoom(roomCode);
+    const room = await getRoom(roomCode);
     if (!room) {
       return NextResponse.json({ error: "Room not found" }, { status: 404 });
     }
@@ -68,7 +68,7 @@ export async function POST(req: Request) {
       gameState: updatedRoom.gameState
     });
     
-    updateRoom(roomCode, updatedRoom);
+    await updateRoom(roomCode, updatedRoom);
     
     return NextResponse.json({ 
       success: true, 

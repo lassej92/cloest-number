@@ -5,7 +5,7 @@ export async function POST(req: Request) {
   try {
     const { roomCode, playerId } = await req.json();
     
-    const room = getRoom(roomCode);
+    const room = await getRoom(roomCode);
     if (!room) {
       return NextResponse.json({ error: "Room not found" }, { status: 404 });
     }
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     // Check if all players are ready
     const allPlayersReady = room.players.length === room.playersReadyForNext.length;
     
-    updateRoom(roomCode, room);
+    await updateRoom(roomCode, room);
     
     return NextResponse.json({ 
       success: true, 

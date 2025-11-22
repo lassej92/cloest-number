@@ -31,7 +31,7 @@ export async function POST(req: Request) {
       createdAt: new Date().toISOString()
     };
     
-    createRoom(roomCode, room);
+    await createRoom(roomCode, room);
     
     // Resolve base URL from request or environment for join URL consistency
     const proto = (req.headers as any).get?.("x-forwarded-proto") || "http";
@@ -58,7 +58,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Room code required" }, { status: 400 });
   }
   
-  const room = getRoom(roomCode);
+  const room = await getRoom(roomCode);
   if (!room) {
     return NextResponse.json({ error: "Room not found" }, { status: 404 });
   }

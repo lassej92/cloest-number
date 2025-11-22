@@ -5,7 +5,7 @@ export async function POST(req: Request) {
   try {
     const { roomCode, playerId, category } = await req.json();
     
-    const room = getRoom(roomCode);
+    const room = await getRoom(roomCode);
     if (!room) {
       return NextResponse.json({ error: "Room not found" }, { status: 404 });
     }
@@ -69,7 +69,7 @@ export async function POST(req: Request) {
       categoryChooser: null // Reset category chooser
     };
     
-    updateRoom(roomCode, updatedRoom);
+    await updateRoom(roomCode, updatedRoom);
     
     return NextResponse.json({ 
       success: true, 

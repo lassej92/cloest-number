@@ -1,27 +1,53 @@
-// Shared room storage (in-memory for demo, use database in production)
-// Use globalThis to persist across hot reloads in development
+// Shared room storage using Vercel KV (Redis) for production
+// Falls back to in-memory storage for local development
+import { kv } from '@vercel/kv';
+
+const ROOM_PREFIX = 'room:';
+
+// Fallback in-memory storage for local development
 const globalForRooms = globalThis as unknown as {
   rooms: Map<string, any> | undefined;
 };
 
-export const rooms = globalForRooms.rooms ?? new Map();
-globalForRooms.rooms = rooms;
+const localRooms = globalForRooms.rooms ?? new Map();
+globalForRooms.rooms = localRooms;
 
-export function createRoom(roomCode: string, roomData: any) {
-  rooms.set(roomCode, roomData);
+// Check if we're using KV (production) or local storage (development)
+const useKV = process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN;
+
+export async function createRoom(roomCode: string, roomData: any) {
+  if (useKV) {
+    await kv.set(`${ROOM_PREFIX}${roomCode}`, roomData);
+  } else {
+    localRooms.set(roomCode, roomData);
+  }
   return roomData;
 }
 
-export function getRoom(roomCode: string) {
-  return rooms.get(roomCode);
+export async function getRoom(roomCode: string) {
+  if (useKV) {
+    const room = await kv.get(`${ROOM_PREFIX}${roomCode}`);
+    return room as any;
+  } else {
+    return localRooms.get(roomCode);
+  }
 }
 
-export function updateRoom(roomCode: string, roomData: any) {
-  rooms.set(roomCode, roomData);
+export async function updateRoom(roomCode: string, roomData: any) {
+  if (useKV) {
+    await kv.set(`${ROOM_PREFIX}${roomCode}`, roomData);
+  } else {
+    localRooms.set(roomCode, roomData);
+  }
   return roomData;
 }
 
-export function deleteRoom(roomCode: string) {
-  return rooms.delete(roomCode);
+export async function deleteRoom(roomCode: string) {
+  if (useKV) {
+    await kv.del(`${ROOM_PREFIX}${roomCode}`);
+    return true;
+  } else {
+    return localRooms.delete(roomCode);
+  }
 }
 
